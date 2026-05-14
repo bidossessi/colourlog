@@ -2,6 +2,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from colourlog.application.ports.activitywatch import AfkSnapshot, WindowSnapshot
 from colourlog.domain.entities import Client, Entry, EntryEvent, Project, Task
 from colourlog.domain.value_objects import Mode
 
@@ -179,3 +180,19 @@ class InMemoryModeRepository:
 
     def set(self, mode: Mode) -> None:
         self._mode = mode
+
+
+class InMemoryActivityWatchReader:
+    def __init__(
+        self,
+        window: WindowSnapshot | None = None,
+        afk: AfkSnapshot | None = None,
+    ) -> None:
+        self.window = window
+        self.afk = afk
+
+    def latest_window(self) -> WindowSnapshot | None:
+        return self.window
+
+    def latest_afk(self) -> AfkSnapshot | None:
+        return self.afk
