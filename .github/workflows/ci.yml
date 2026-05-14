@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: provision venv
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -e ".[dev]"
+
+      - name: ruff check
+        run: .venv/bin/ruff check colourlog tests
+
+      - name: ruff format --check
+        run: .venv/bin/ruff format --check colourlog tests
+
+      - name: mypy --strict
+        run: .venv/bin/mypy colourlog tests
+
+      - name: pytest + coverage
+        run: .venv/bin/pytest
+
+      - name: lint-imports
+        run: .venv/bin/lint-imports
+
+      - name: commitizen check PR commits
+        if: github.event_name == 'pull_request'
+        run: |
+          .venv/bin/cz check \
+            --rev-range "origin/${{ github.base_ref }}..HEAD"
