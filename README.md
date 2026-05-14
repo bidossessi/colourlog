@@ -1,5 +1,14 @@
 # colourlog
 
+[![CI](https://github.com/bidossessi/colourlog/actions/workflows/ci.yml/badge.svg)](https://github.com/bidossessi/colourlog/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/bidossessi/colourlog/branch/main/graph/badge.svg)](https://codecov.io/gh/bidossessi/colourlog)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![mypy: strict](https://img.shields.io/badge/mypy-strict-blue.svg)](http://mypy-lang.org/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+[![Conventional Commits](https://img.shields.io/badge/conventional%20commits-1.0.0-yellow.svg)](https://www.conventionalcommits.org/)
+
 Personal, self-hosted, GNOME-native time tracker. Consumes ActivityWatch buckets, supports manual + auto task switching via keywords + calendar, exports `detailed.csv` for the monthly timesheet pipeline.
 
 Status: pre-alpha. Phase 0 (AW headless) + Phase 1 (daemon skeleton + CRUD) + Phase 2 ledger foundations done.

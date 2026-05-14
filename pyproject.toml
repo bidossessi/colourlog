@@ -93,6 +93,7 @@ addopts = [
   "--strict-config",
   "--cov=colourlog",
   "--cov-report=term-missing",
+  "--cov-report=xml:coverage.xml",
   "--cov-branch",
 ]
 
