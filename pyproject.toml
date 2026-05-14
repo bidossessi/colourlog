@@ -87,6 +87,7 @@ disallow_incomplete_defs = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+junit_family = "legacy"
 addopts = [
   "-ra",
   "--strict-markers",
@@ -95,6 +96,7 @@ addopts = [
   "--cov-report=term-missing",
   "--cov-report=xml:coverage.xml",
   "--cov-branch",
+  "--junitxml=junit.xml",
 ]
 
 [tool.coverage.run]
