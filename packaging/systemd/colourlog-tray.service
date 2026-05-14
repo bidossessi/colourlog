@@ -1,0 +1,15 @@
+[Unit]
+Description=colourlog tray indicator
+Documentation=https://github.com/bidossessi/colourlog
+After=graphical-session.target colourlog-daemon.service
+Wants=colourlog-daemon.service
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/Documents/personal/colourlog/.venv/bin/colourlog-tray
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=graphical-session.target

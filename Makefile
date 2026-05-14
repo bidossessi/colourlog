@@ -7,7 +7,7 @@ MYPY := $(VENV)/bin/mypy
 PYTEST := $(VENV)/bin/pytest
 LINT_IMPORTS := $(VENV)/bin/lint-imports
 
-.PHONY: help venv install lint format fix types test imports check clean run hooks-run
+.PHONY: help venv install lint format fix types test imports check clean run tray hooks-run
 
 help:
 	@echo "targets:"
@@ -22,6 +22,7 @@ help:
 	@echo "  check     lint + types + test + imports"
 	@echo "  clean     remove caches"
 	@echo "  run       launch daemon (uvicorn)"
+	@echo "  tray      launch GTK3 tray indicator (requires display session)"
 	@echo "  hooks-run run all pre-commit hooks across all files (occasional sweep)"
 
 venv:
@@ -29,7 +30,7 @@ venv:
 	$(PIP) install --upgrade pip
 
 install:
-	$(PIP) install -e "$(ROOT)[dev]"
+	$(PIP) install -e "$(ROOT)[dev,gtk]"
 	env -C $(ROOT) $(VENV)/bin/pre-commit install
 
 lint:
@@ -61,6 +62,9 @@ clean:
 
 run:
 	COLOURLOG_LOG_FILE=$(ROOT)/var/log/colourlog.log $(PY) -m colourlog
+
+tray:
+	$(VENV)/bin/colourlog-tray
 
 hooks-run:
 	env -C $(ROOT) $(VENV)/bin/pre-commit run --all-files

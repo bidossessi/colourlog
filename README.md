@@ -22,10 +22,28 @@ Status: pre-alpha. Phase 0 (AW headless) + Phase 1 (daemon skeleton + CRUD) + Ph
 
 ## Setup
 
+**System prerequisites** (Ubuntu 24.04 noble):
+
+```sh
+sudo apt install python3-gi gir1.2-gtk-3.0 gir1.2-ayatanaappindicator3-0.1 \
+                 libgirepository1.0-dev libcairo2-dev pkg-config
+```
+
+These provide GTK3 + AppIndicator + the headers PyGObject builds against.
+
+**Project setup**:
+
 ```sh
 make venv       # create .venv (python3.12)
-make install    # pip install -e .[dev] + install pre-commit git hooks
+make install    # pip install -e .[dev,gtk] + install pre-commit git hooks
 make check      # run all gates: lint + types + tests + import contract
+```
+
+**Running**:
+
+```sh
+make run        # daemon: uvicorn on 127.0.0.1:18765
+make tray       # tray indicator (requires GUI session)
 ```
 
 `make install` also wires the git hooks (`.git/hooks/pre-commit` + `commit-msg`). After that, every `git commit` auto-runs ruff + mypy + lint-imports + commitizen (conventional-commit format check on the message).
@@ -38,6 +56,7 @@ make check      # run all gates: lint + types + tests + import contract
 | `make fix` | ruff auto-fix + format |
 | `make test` | pytest + coverage only |
 | `make run` | launch daemon (uvicorn on 127.0.0.1:18765, log → `var/log/colourlog.log`) |
+| `make tray` | launch GTK3 tray (needs daemon running) |
 
 ## Commit conventions
 
