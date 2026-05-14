@@ -4,6 +4,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
+from colourlog.adapters.event_bus.in_memory import InMemoryEventBus
 from colourlog.adapters.persistence.sqlite.client_repository import (
     SqliteClientRepository,
 )
@@ -37,6 +38,7 @@ def container(db_path: Path) -> Container:
         projects_repo=SqliteProjectRepository(db_path),
         tasks_repo=SqliteTaskRepository(db_path),
         events_repo=SqliteEntryEventRepository(db_path),
+        event_bus=InMemoryEventBus(),
         clock=AdvancingClock(datetime(2026, 5, 14, 10, 0, tzinfo=UTC), step_seconds=1),
     )
 

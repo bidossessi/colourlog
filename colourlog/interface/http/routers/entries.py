@@ -10,6 +10,7 @@ from colourlog.application.usecases.start_entry import StartEntry
 from colourlog.application.usecases.stop_entry import StopEntry
 from colourlog.interface.http.dependencies import (
     ClockDep,
+    EventBusDep,
     EventsRepoDep,
     TasksRepoDep,
 )
@@ -19,23 +20,26 @@ router = APIRouter(prefix="/entries", tags=["entries"])
 
 
 @router.post("/start", response_model=EntryEventOut, status_code=status.HTTP_201_CREATED)
-def start_entry(
+async def start_entry(
     body: EntryStartIn,
     events: EventsRepoDep,
     tasks: TasksRepoDep,
     clock: ClockDep,
+    bus: EventBusDep,
 ) -> EntryEventOut:
     ev = StartEntry(events=events, tasks=tasks, clock=clock).execute(
         task_id=body.task_id,
         subtask_id=body.subtask_id,
         note=body.note,
     )
+    await bus.publish(ev)
     return EntryEventOut.model_validate(ev)
 
 
 @router.post("/stop", response_model=EntryEventOut, status_code=status.HTTP_201_CREATED)
-def stop_entry(events: EventsRepoDep, clock: ClockDep) -> EntryEventOut:
+async def stop_entry(events: EventsRepoDep, clock: ClockDep, bus: EventBusDep) -> EntryEventOut:
     ev = StopEntry(events=events, clock=clock).execute()
+    await bus.publish(ev)
     return EntryEventOut.model_validate(ev)
 
 

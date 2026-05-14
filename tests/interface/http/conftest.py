@@ -2,6 +2,7 @@
 from datetime import UTC, datetime
 
 import pytest
+from colourlog.adapters.event_bus.in_memory import InMemoryEventBus
 from colourlog.composition.container import Container
 from colourlog.composition.fastapi_app import create_app
 from fastapi.testclient import TestClient
@@ -22,6 +23,7 @@ def container() -> Container:
         projects_repo=InMemoryProjectRepository(),
         tasks_repo=InMemoryTaskRepository(),
         events_repo=InMemoryEntryEventRepository(),
+        event_bus=InMemoryEventBus(),
         clock=AdvancingClock(datetime(2026, 5, 14, 10, 0, tzinfo=UTC), step_seconds=1),
     )
 
