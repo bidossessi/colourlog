@@ -10,6 +10,7 @@ acceptance run (`make tray` against a running daemon).
 import logging
 import threading
 from collections.abc import Callable
+from pathlib import Path
 
 import gi
 
@@ -115,9 +116,12 @@ class TrayApp:
 
         self._indicator = AyatanaAppIndicator3.Indicator.new(
             "colourlog-tray",
-            "media-playback-stop",
+            "colourlog-stopped",
             AyatanaAppIndicator3.IndicatorCategory.APPLICATION_STATUS,
         )
+        icons_dir = Path(__file__).resolve().parent.parent.parent.parent / "packaging" / "icons"
+        if icons_dir.is_dir():
+            self._indicator.set_icon_theme_path(str(icons_dir))
         self._indicator.set_status(AyatanaAppIndicator3.IndicatorStatus.ACTIVE)
 
         self._menu = Gtk.Menu()

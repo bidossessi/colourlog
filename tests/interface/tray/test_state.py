@@ -30,7 +30,7 @@ class TestRender:
         view = render(_current(), daemon_online=True)
         assert view.icon is IconState.RUNNING
         assert view.label == "M: T41622"
-        assert view.icon_name == "media-playback-start"
+        assert view.icon_name == "colourlog-running"
 
     def test_running_auto(self):
         view = render(_current(source="auto"), daemon_online=True)

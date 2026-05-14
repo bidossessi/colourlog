@@ -13,9 +13,9 @@ class IconState(StrEnum):
 
 
 _ICON_NAMES: dict[IconState, str] = {
-    IconState.RUNNING: "media-playback-start",
-    IconState.PAUSED: "media-playback-pause",
-    IconState.IDLE: "media-playback-stop",
+    IconState.RUNNING: "colourlog-running",
+    IconState.PAUSED: "colourlog-paused",
+    IconState.IDLE: "colourlog-stopped",
     IconState.OFFLINE: "network-offline",
 }
 
