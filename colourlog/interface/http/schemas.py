@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from colourlog.domain.value_objects import MatchSource, Source
+from colourlog.domain.value_objects import MatchSource, Mode, Source
 
 
 class ClientCreate(BaseModel):
@@ -109,3 +109,11 @@ class EntryEventOut(BaseModel):
 class CurrentTaskOut(BaseModel):
     entry: EntryOut
     task: TaskOut
+
+
+class ModeOut(BaseModel):
+    mode: Mode
+
+
+class ModeIn(BaseModel):
+    mode: Mode

@@ -11,3 +11,8 @@ class MatchSource(StrEnum):
     WINDOW = "window"
     CALENDAR = "calendar"
     AFK_RESUME = "afk_resume"
+
+
+class Mode(StrEnum):
+    MANUAL = "manual"
+    AUTO = "auto"

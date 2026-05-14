@@ -3,6 +3,7 @@ from datetime import datetime
 from uuid import UUID
 
 from colourlog.domain.entities import Client, Entry, EntryEvent, Project, Task
+from colourlog.domain.value_objects import Mode
 
 
 class InMemoryClientRepository:
@@ -167,3 +168,14 @@ class FrozenClock:
 
     def now(self) -> datetime:
         return self._ts
+
+
+class InMemoryModeRepository:
+    def __init__(self, initial: Mode = Mode.MANUAL) -> None:
+        self._mode = initial
+
+    def get(self) -> Mode:
+        return self._mode
+
+    def set(self, mode: Mode) -> None:
+        self._mode = mode

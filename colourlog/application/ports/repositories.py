@@ -4,6 +4,7 @@ from typing import Protocol
 from uuid import UUID
 
 from colourlog.domain.entities import Client, Entry, EntryEvent, Project, Task
+from colourlog.domain.value_objects import Mode
 
 
 class ClientRepository(Protocol):
@@ -75,3 +76,9 @@ class EntryEventRepository(Protocol):
         to_ts: datetime | None = None,
         task_id: UUID | None = None,
     ) -> list[Entry]: ...
+
+
+class ModeRepository(Protocol):
+    def get(self) -> Mode: ...
+
+    def set(self, mode: Mode) -> None: ...

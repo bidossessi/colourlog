@@ -11,6 +11,7 @@ from tests.application.fakes import (
     AdvancingClock,
     InMemoryClientRepository,
     InMemoryEntryEventRepository,
+    InMemoryModeRepository,
     InMemoryProjectRepository,
     InMemoryTaskRepository,
 )
@@ -23,6 +24,7 @@ def container() -> Container:
         projects_repo=InMemoryProjectRepository(),
         tasks_repo=InMemoryTaskRepository(),
         events_repo=InMemoryEntryEventRepository(),
+        modes_repo=InMemoryModeRepository(),
         event_bus=InMemoryEventBus(),
         clock=AdvancingClock(datetime(2026, 5, 14, 10, 0, tzinfo=UTC), step_seconds=1),
     )

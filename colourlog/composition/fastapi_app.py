@@ -8,6 +8,7 @@ from colourlog.interface.http.routers.clients import router as clients_router
 from colourlog.interface.http.routers.entries import router as entries_router
 from colourlog.interface.http.routers.events import router as events_router
 from colourlog.interface.http.routers.health import router as health_router
+from colourlog.interface.http.routers.mode import router as mode_router
 from colourlog.interface.http.routers.projects import router as projects_router
 from colourlog.interface.http.routers.tasks import router as tasks_router
 
@@ -22,6 +23,7 @@ def create_app(container: Container) -> FastAPI:
     app.dependency_overrides[dependencies.get_tasks_repo] = lambda: container.tasks_repo
     app.dependency_overrides[dependencies.get_events_repo] = lambda: container.events_repo
     app.dependency_overrides[dependencies.get_event_bus] = lambda: container.event_bus
+    app.dependency_overrides[dependencies.get_modes_repo] = lambda: container.modes_repo
     app.dependency_overrides[dependencies.get_clock] = lambda: container.clock
 
     app.include_router(health_router)
@@ -30,6 +32,7 @@ def create_app(container: Container) -> FastAPI:
     app.include_router(tasks_router, prefix=API_PREFIX)
     app.include_router(entries_router, prefix=API_PREFIX)
     app.include_router(events_router, prefix=API_PREFIX)
+    app.include_router(mode_router, prefix=API_PREFIX)
 
     register_exception_handlers(app)
 

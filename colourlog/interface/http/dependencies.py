@@ -8,6 +8,7 @@ from colourlog.application.ports.event_bus import EventBus
 from colourlog.application.ports.repositories import (
     ClientRepository,
     EntryEventRepository,
+    ModeRepository,
     ProjectRepository,
     TaskRepository,
 )
@@ -33,6 +34,10 @@ def get_event_bus() -> EventBus:
     raise NotImplementedError("composition root must override get_event_bus")
 
 
+def get_modes_repo() -> ModeRepository:
+    raise NotImplementedError("composition root must override get_modes_repo")
+
+
 def get_clock() -> Clock:
     raise NotImplementedError("composition root must override get_clock")
 
@@ -42,4 +47,5 @@ ProjectsRepoDep = Annotated[ProjectRepository, Depends(get_projects_repo)]
 TasksRepoDep = Annotated[TaskRepository, Depends(get_tasks_repo)]
 EventsRepoDep = Annotated[EntryEventRepository, Depends(get_events_repo)]
 EventBusDep = Annotated[EventBus, Depends(get_event_bus)]
+ModesRepoDep = Annotated[ModeRepository, Depends(get_modes_repo)]
 ClockDep = Annotated[Clock, Depends(get_clock)]

@@ -12,6 +12,9 @@ from colourlog.adapters.persistence.sqlite.engine import connect, init_schema
 from colourlog.adapters.persistence.sqlite.entry_event_repository import (
     SqliteEntryEventRepository,
 )
+from colourlog.adapters.persistence.sqlite.mode_repository import (
+    SqliteModeRepository,
+)
 from colourlog.adapters.persistence.sqlite.project_repository import (
     SqliteProjectRepository,
 )
@@ -21,6 +24,7 @@ from colourlog.application.ports.event_bus import EventBus
 from colourlog.application.ports.repositories import (
     ClientRepository,
     EntryEventRepository,
+    ModeRepository,
     ProjectRepository,
     TaskRepository,
 )
@@ -32,6 +36,7 @@ class Container:
     projects_repo: ProjectRepository
     tasks_repo: TaskRepository
     events_repo: EntryEventRepository
+    modes_repo: ModeRepository
     event_bus: EventBus
     clock: Clock
 
@@ -44,6 +49,7 @@ def build_sqlite_container(database_path: Path | str) -> Container:
         projects_repo=SqliteProjectRepository(database_path),
         tasks_repo=SqliteTaskRepository(database_path),
         events_repo=SqliteEntryEventRepository(database_path),
+        modes_repo=SqliteModeRepository(database_path),
         event_bus=InMemoryEventBus(),
         clock=SystemClock(),
     )

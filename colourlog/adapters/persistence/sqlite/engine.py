@@ -41,6 +41,11 @@ CREATE TABLE IF NOT EXISTS entry_events (
 
 CREATE INDEX IF NOT EXISTS entry_events_ts_idx ON entry_events(ts);
 CREATE INDEX IF NOT EXISTS entry_events_task_ts_idx ON entry_events(task_id, ts);
+
+CREATE TABLE IF NOT EXISTS daemon_state (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+);
 """
 
 
