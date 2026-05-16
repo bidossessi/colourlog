@@ -50,6 +50,13 @@ def _match_window(window: WindowSnapshot, tasks: list[Task]) -> tuple[Task, str]
     return None
 
 
+def compute_current_signals(window: WindowSnapshot | None, tasks: list[Task]) -> OverrideSignals:
+    if window is None:
+        return OverrideSignals(window_keyword=None)
+    match = _match_window(window, tasks)
+    return OverrideSignals(window_keyword=match[1] if match else None)
+
+
 def resolve_auto_switch(
     *,
     mode: Mode,
@@ -60,10 +67,12 @@ def resolve_auto_switch(
 ) -> Decision:
     if mode is not Mode.AUTO:
         return NoOp()
-    match = _match_window(window, tasks) if window is not None else None
-    current_signals = OverrideSignals(window_keyword=match[1] if match else None)
+    current_signals = compute_current_signals(window, tasks)
     if override is not None and current_signals == override.signals:
         return NoOp()
+    if window is None:
+        return NoOp()
+    match = _match_window(window, tasks)
     if match is None:
         return NoOp()
     task, keyword = match
