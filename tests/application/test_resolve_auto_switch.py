@@ -5,6 +5,8 @@ from uuid import UUID, uuid4
 from colourlog.application.ports.activitywatch import WindowSnapshot
 from colourlog.application.usecases.resolve_auto_switch import (
     NoOp,
+    OverrideContext,
+    OverrideSignals,
     StartAuto,
     resolve_auto_switch,
 )
@@ -142,3 +144,76 @@ class TestAlreadyOnTask:
         w = _window(title="T41622 - main.py")
         decision = resolve_auto_switch(mode=Mode.AUTO, latest_event=stop_event, window=w, tasks=[t])
         assert isinstance(decision, StartAuto)
+
+
+class TestOverrideStickiness:
+    def test_override_no_op_when_window_keyword_unchanged(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="working on t1")
+        override = OverrideContext(signals=OverrideSignals(window_keyword="t1"))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO, latest_event=None, window=w, tasks=[t], override=override
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_override_releases_when_window_keyword_changes(self):
+        t1 = _task("T1", keywords=["t1"], created_offset=0)
+        t2 = _task("T2", keywords=["t2"], created_offset=5)
+        w = _window(title="now on t2")
+        override = OverrideContext(signals=OverrideSignals(window_keyword="t1"))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=None,
+            window=w,
+            tasks=[t1, t2],
+            override=override,
+        )
+        assert isinstance(decision, StartAuto)
+        assert decision.task_id == t2.id
+        assert decision.matched_keyword == "t2"
+
+    def test_override_no_op_when_blank_held_and_window_has_no_match(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="something unrelated")
+        override = OverrideContext(signals=OverrideSignals(window_keyword=None))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO, latest_event=None, window=w, tasks=[t], override=override
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_override_releases_when_blank_held_but_window_now_matches(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="working on t1 now")
+        override = OverrideContext(signals=OverrideSignals(window_keyword=None))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO, latest_event=None, window=w, tasks=[t], override=override
+        )
+        assert isinstance(decision, StartAuto)
+        assert decision.task_id == t.id
+
+    def test_manual_mode_ignores_override(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="working on t1")
+        override = OverrideContext(signals=OverrideSignals(window_keyword="t1"))
+        decision = resolve_auto_switch(
+            mode=Mode.MANUAL,
+            latest_event=None,
+            window=w,
+            tasks=[t],
+            override=override,
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_override_release_still_respects_already_on_task(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="t1 window")
+        latest = _start_event(t.id)
+        override = OverrideContext(signals=OverrideSignals(window_keyword=None))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=latest,
+            window=w,
+            tasks=[t],
+            override=override,
+        )
+        assert isinstance(decision, NoOp)

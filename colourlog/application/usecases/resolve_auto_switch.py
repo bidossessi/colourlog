@@ -8,6 +8,16 @@ from colourlog.domain.value_objects import MatchSource, Mode
 
 
 @dataclass(frozen=True, slots=True)
+class OverrideSignals:
+    window_keyword: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class OverrideContext:
+    signals: OverrideSignals
+
+
+@dataclass(frozen=True, slots=True)
 class NoOp:
     pass
 
@@ -55,12 +65,14 @@ def resolve_auto_switch(
     latest_event: EntryEvent | None,
     window: WindowSnapshot | None,
     tasks: list[Task],
+    override: OverrideContext | None = None,
 ) -> Decision:
     if mode is not Mode.AUTO:
         return NoOp()
-    if window is None:
+    match = _match_window(window, tasks) if window is not None else None
+    current_signals = OverrideSignals(window_keyword=match[1] if match else None)
+    if override is not None and current_signals == override.signals:
         return NoOp()
-    match = _match_window(window, tasks)
     if match is None:
         return NoOp()
     task, keyword = match
