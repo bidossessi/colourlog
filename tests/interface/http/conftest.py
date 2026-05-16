@@ -3,12 +3,14 @@ from datetime import UTC, datetime
 
 import pytest
 from colourlog.adapters.event_bus.in_memory import InMemoryEventBus
+from colourlog.adapters.override.in_memory import InMemoryOverrideStore
 from colourlog.composition.container import Container
 from colourlog.composition.fastapi_app import create_app
 from fastapi.testclient import TestClient
 
 from tests.application.fakes import (
     AdvancingClock,
+    InMemoryActivityWatchReader,
     InMemoryClientRepository,
     InMemoryEntryEventRepository,
     InMemoryModeRepository,
@@ -27,6 +29,9 @@ def container() -> Container:
         modes_repo=InMemoryModeRepository(),
         event_bus=InMemoryEventBus(),
         clock=AdvancingClock(datetime(2026, 5, 14, 10, 0, tzinfo=UTC), step_seconds=1),
+        aw_reader=InMemoryActivityWatchReader(),
+        override_store=InMemoryOverrideStore(),
+        poll_interval=60.0,
     )
 
 

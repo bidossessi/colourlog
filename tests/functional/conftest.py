@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 from colourlog.adapters.event_bus.in_memory import InMemoryEventBus
+from colourlog.adapters.override.in_memory import InMemoryOverrideStore
 from colourlog.adapters.persistence.sqlite.client_repository import (
     SqliteClientRepository,
 )
@@ -23,7 +24,7 @@ from colourlog.composition.container import Container
 from colourlog.composition.fastapi_app import create_app
 from fastapi.testclient import TestClient
 
-from tests.application.fakes import AdvancingClock
+from tests.application.fakes import AdvancingClock, InMemoryActivityWatchReader
 
 
 @pytest.fixture
@@ -44,6 +45,9 @@ def container(db_path: Path) -> Container:
         modes_repo=SqliteModeRepository(db_path),
         event_bus=InMemoryEventBus(),
         clock=AdvancingClock(datetime(2026, 5, 14, 10, 0, tzinfo=UTC), step_seconds=1),
+        aw_reader=InMemoryActivityWatchReader(),
+        override_store=InMemoryOverrideStore(),
+        poll_interval=60.0,
     )
 
 
