@@ -3,10 +3,9 @@ from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
 from colourlog.application.ports.activitywatch import WindowSnapshot
+from colourlog.application.ports.override import OverrideContext, OverrideSignals
 from colourlog.application.usecases.resolve_auto_switch import (
     NoOp,
-    OverrideContext,
-    OverrideSignals,
     StartAuto,
     resolve_auto_switch,
 )

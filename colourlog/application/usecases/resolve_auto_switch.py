@@ -3,18 +3,9 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from colourlog.application.ports.activitywatch import WindowSnapshot
+from colourlog.application.ports.override import OverrideContext, OverrideSignals
 from colourlog.domain.entities import EntryEvent, Task
 from colourlog.domain.value_objects import MatchSource, Mode
-
-
-@dataclass(frozen=True, slots=True)
-class OverrideSignals:
-    window_keyword: str | None = None
-
-
-@dataclass(frozen=True, slots=True)
-class OverrideContext:
-    signals: OverrideSignals
 
 
 @dataclass(frozen=True, slots=True)
