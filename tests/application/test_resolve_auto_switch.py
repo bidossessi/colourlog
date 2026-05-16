@@ -2,11 +2,12 @@
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
-from colourlog.application.ports.activitywatch import WindowSnapshot
+from colourlog.application.ports.activitywatch import AfkSnapshot, WindowSnapshot
 from colourlog.application.ports.override import OverrideContext, OverrideSignals
 from colourlog.application.usecases.resolve_auto_switch import (
     NoOp,
     StartAuto,
+    Stop,
     resolve_auto_switch,
 )
 from colourlog.domain.entities import EntryEvent, Task
@@ -216,3 +217,84 @@ class TestOverrideStickiness:
             override=override,
         )
         assert isinstance(decision, NoOp)
+
+
+def _afk(status: str, duration: float = 60.0) -> AfkSnapshot:
+    return AfkSnapshot(ts=_ts(), status=status, duration_seconds=duration)  # type: ignore[arg-type]
+
+
+class TestAfk:
+    def test_afk_away_with_running_entry_returns_stop(self):
+        t = _task("T1", keywords=["t1"])
+        latest = _start_event(t.id)
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=latest,
+            window=None,
+            tasks=[t],
+            afk=_afk("afk"),
+        )
+        assert isinstance(decision, Stop)
+
+    def test_afk_away_with_no_running_entry_returns_noop(self):
+        t = _task("T1", keywords=["t1"])
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=None,
+            window=None,
+            tasks=[t],
+            afk=_afk("afk"),
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_afk_away_with_stop_event_as_latest_returns_noop(self):
+        t = _task("T1", keywords=["t1"])
+        stop_event = EntryEvent.create(id=uuid4(), ts=_ts())
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=stop_event,
+            window=None,
+            tasks=[t],
+            afk=_afk("afk"),
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_afk_not_afk_falls_through_to_window_logic(self):
+        t = _task("T1", keywords=["t1"])
+        w = _window(title="t1 here")
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=None,
+            window=w,
+            tasks=[t],
+            afk=_afk("not-afk"),
+        )
+        assert isinstance(decision, StartAuto)
+        assert decision.task_id == t.id
+
+    def test_afk_away_in_manual_mode_returns_noop(self):
+        t = _task("T1", keywords=["t1"])
+        latest = _start_event(t.id)
+        decision = resolve_auto_switch(
+            mode=Mode.MANUAL,
+            latest_event=latest,
+            window=None,
+            tasks=[t],
+            afk=_afk("afk"),
+        )
+        assert isinstance(decision, NoOp)
+
+    def test_afk_away_trumps_sticky_override(self):
+        t = _task("T1", keywords=["t1"])
+        latest = _start_event(t.id)
+        w = _window(title="t1 here")
+        override = OverrideContext(signals=OverrideSignals(window_keyword="t1"))
+        decision = resolve_auto_switch(
+            mode=Mode.AUTO,
+            latest_event=latest,
+            window=w,
+            tasks=[t],
+            override=override,
+            afk=_afk("afk"),
+        )
+        assert isinstance(decision, Stop)

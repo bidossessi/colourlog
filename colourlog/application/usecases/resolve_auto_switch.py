@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from colourlog.application.ports.activitywatch import WindowSnapshot
+from colourlog.application.ports.activitywatch import AfkSnapshot, WindowSnapshot
 from colourlog.application.ports.override import OverrideContext, OverrideSignals
 from colourlog.domain.entities import EntryEvent, Task
 from colourlog.domain.value_objects import MatchSource, Mode
@@ -64,9 +64,17 @@ def resolve_auto_switch(
     window: WindowSnapshot | None,
     tasks: list[Task],
     override: OverrideContext | None = None,
+    afk: AfkSnapshot | None = None,
 ) -> Decision:
     if mode is not Mode.AUTO:
         return NoOp()
+    if (
+        afk is not None
+        and afk.status == "afk"
+        and latest_event is not None
+        and latest_event.is_start
+    ):
+        return Stop()
     current_signals = compute_current_signals(window, tasks)
     if override is not None and current_signals == override.signals:
         return NoOp()
